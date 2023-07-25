@@ -1,0 +1,516 @@
+---
+title: "Trends in Chlorophyll"
+format: 
+  html:
+    toc: true
+    code-fold: true
+execute: 
+  warning: false
+  message: false
+editor_options: 
+  chunk_output_type: console
+bibliography: references.bib
+---
+
+```{r}
+#| label: setup
+#| include: false
+if(!require(here)){ install.packages("here") } ;  library(here) # easy paths
+if(!require(dplyr)){ install.packages("dplyr") } ;  library(dplyr) # left_join
+if(!require(tidyr)){ install.packages("tidyr") } ;  library(tidyr) # pipe operator %>% 
+if(!require(ggplot2)){install.packages("ggplot2")} ; library(ggplot2) # plotting
+if(!require(lubridate)){ install.packages("lubridate") } ;  library(tidyr) # pipe operator %>% 
+if(!require(janitor)){ install.packages("janitor") } ;  library(janitor) # clean names
+if(!require(readxl)){ install.packages("readxl") } ;  library(readxl) # clean names
+if(!require(wqtrends)){ 
+  options(repos = c(
+  tbeptech = 'https://tbep-tech.r-universe.dev',
+  CRAN = 'https://cloud.r-project.org'))
+  install.packages('wqtrends')} ; library(wqtrends) # models and plots for trends
+
+```
+
+# Data
+
+## Collection Methods
+
+Water samples were collected monthly at each of the four water quality monitoring stations at the GTMNERR for nitrite + nitrate, ammonium, total nitrogen, orthophosphate, total phosphorus, chlorophyll a, and total suspended solids using two types of sampling methods (grab and diel), on the same day during an ebb tide. Grab samples were collected from all stations in duplicate using a pole sampler and bucket. Diel samples were only collected at the Pellicer Creek station at 2.5-hour intervals for a 25-hour (lunar day) period using a Teledyne ISCO automatic sampler equipped with an internal ice bath to keep samples cold. Both grab and diel samples were collected from the approximate depth of the sonde sensors, 1 m above the bottom. Samples were filtered in the field whenever feasible; otherwise, they were placed on ice in the dark and filtered immediately upon returning to the laboratory.
+
+Water samples collected between January 1, 2003 and June 30, 2010 were collected and analyzed by University of Florida's (UF) Department of Fisheries and Aquatic Sciences. Samples collected between July 1, 2010 and November 30, 2012 were collected by GTMNERR and analyzed by the UF lab. Samples collected on or after December 1, 2012 were collected by GTMNERR and analyzed by the Florida Department of Environmental Protection's (FDEP) Central Laboratory. Both laboratories were certified through the National Environmental Laboratory Accreditation Program and used the American Public Health Association and Environmental Protection Agency methods for analyses. Method details can be found in annual metadata files at www.nerrsdata.org.
+
+## The data set
+
+Loading the nutrient data file and cleaning it up for analysis. This file is an appended internal file to the GTMNERR that contains data from 2002-2023 with QC flags and codes and all the parameters included. This data is not included in the GitHub repository, but can be requested from the GTMNERR.
+
+```{r}
+#| label: load-data
+#| echo: false
+
+nms <- names(read_excel(here::here('data',
+                                   'All_inclusive_NUT',
+                                   'gtmnut2002-2023_QC_zeros-corrected.xlsx'), 
+                        n_max = 0)) # pull out all the column names in this file
+
+class <- ifelse(grepl("^F_", nms), "text", "numeric") # read everything with F_ as a character
+class2 <- class[-(1:5)] # remove the first five elements of the vector because they are different
+
+NUT <- readxl::read_xlsx(here::here('data',
+                                    'All_inclusive_NUT',
+                                    'gtmnut2002-2023_QC_zeros-corrected.xlsx'),
+                         col_types = c("text", 
+                                       "date", 
+                                       "numeric", 
+                                       "numeric", 
+                                       "text", 
+                                       class2)) %>% # specify how to read in these columns
+  janitor::clean_names()
+
+# clean environment
+rm(nms, class, class2)
+
+glimpse(NUT)
+
+```
+
+# Data preparation
+
+## Selecting and filtering QAQC flags and codes
+
+We are interested in examining trends in chlorophyll *a* (chl-a) for complete years across a 20 year period. Therefore, we are only selecting the chl-a data from 2003-2022 at all stations. This dataset includes both grab and diel collection results, so the diel data will be filtered out as well.
+
+```{r}
+#| label: chla-dat
+
+chla <- NUT %>% 
+          filter(!is.na(rep)) %>% # remove "S" reps in dataset
+          select(station_code, 2:5, chla_n, f_chla_n) %>% # keep only chla data
+          rename(datetimestamp = date_time_stamp) %>% # clean name
+          mutate(date = lubridate::date(datetimestamp)) %>% # create date variable from POSIXct
+          filter(monitoring_program == 1) %>% # keep only grab samples (remove DIEL)
+          select(-monitoring_program, -rep) # remove columns once done
+
+glimpse(chla)
+```
+
+The F_Record column contains [QAQC codes](https://cdmo.baruch.sc.edu/data/qaqc.cfm) that apply to the entire record. We want to look at what all are included in this dataset.
+
+```{r}
+# examine f_record values for further filtering
+unique(chla$f_record)
+
+```
+
+All of those codes are okay, none of the records require further filtering. Next will be to look at the flags and codes for the chl-a results:
+
+```{r}
+# examine f_chla values for further filtering
+unique(chla$f_chla_n)
+
+```
+
+This data contains several records that will not be good to keep for the analysis. Examining the suspect data ("\<1\>") it seems a lot of that data contains CSM codes and metadata documentation that says these reference "Laboratory indicated that the values reported are the mean of two or more determinations" and values were estimated. For now, all rejected and suspect data will be removed for analysis. I am keeping the data flagged with "\<-4\>" which means "below sensor limit". This just means this data was below the minimum detection limit from lab, but that doesn't mean that the data isn't usable.
+
+So, filtering the data and then averaging the duplicates for a monthly average chl-a at each site `value` and then reformating it to match the format used for the `wqtrends` [workflow](https://tbep-tech.github.io/wqtrends/articles/introduction.html) [@beck2022]. This means adding a few columns such as `doy` (day of year), `cont_year` (date in decimal time), `yr` (year), `mo` (month as character label), and `param` which is probably not necessary, but since it was included in the vignette, I added a column to make it clear this is chl-a data. This is also where I filtered to remove 2002 and 2023 data since they are not of interest for this trend analysis.
+
+```{r}
+# prep data for GAM
+
+chla_dat <- chla %>% 
+              filter(!grepl(c("<-3>"), f_chla_n) & 
+                       !grepl(c("<1>"), f_chla_n)) %>% # remove rejected and suspect data
+              select(-f_record, -f_chla_n) %>% # remove qc columns after filtering
+              group_by(station_code, date) %>% # group by station and date to average duplicates
+              summarise(value = mean(chla_n, na.rm = T)) %>% # avg duplicates
+              ungroup() %>% 
+              mutate(doy = lubridate::yday(date), # day of the year
+                     cont_year = lubridate::decimal_date(date), # date in decimal time
+                     yr = lubridate::year(date), # year
+                     mo = lubridate::month(date, label = TRUE), # month
+                     param = "chla") %>% # add param name
+              rename(station = station_code) %>% # clean variable name
+              filter(yr > 2002 & yr < 2023) # only keep data from 2003-2022
+
+head(chla_dat)
+```
+
+# Data Analysis
+
+## Normality testing and data distribution
+
+```{r}
+chla_dat %>% 
+  mutate(station = factor(station, 
+                          levels = c("gtmpcnut",
+                                     "gtmfmnut",
+                                     "gtmssnut",
+                                     "gtmpinut"))) %>% 
+  ggplot(aes(x = value, y = station, fill = station)) +
+  ggdist::stat_slab(aes(thickness = after_stat(pdf*n)), scale = 0.7) +
+  ggdist::stat_dotsinterval(side = "bottom", scale = 0.7, slab_linewidth = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  labs(x = "Chlorophyll-a (\U00B5g/L)",
+       y = "",
+       title = "Identity") 
+```
+
+```{r}
+chla_dat %>% 
+  mutate(station = factor(station, 
+                          levels = c("gtmpcnut",
+                                     "gtmfmnut",
+                                     "gtmssnut",
+                                     "gtmpinut"))) %>% 
+  ggplot(aes(x = log10(value), y = station, fill = station)) +
+  ggdist::stat_slab(aes(thickness = after_stat(pdf*n)), scale = 0.7) +
+  ggdist::stat_dotsinterval(side = "bottom", scale = 0.7, slab_linewidth = NA) +
+  scale_fill_brewer(palette = "Set2") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  labs(x = "Chlorophyll-a (\U00B5g/L)",
+       y = "",
+       title = "Log-10 Transformation") 
+```
+
+```{r}
+pi <- chla_dat %>% filter(station == "gtmpinut") %>% mutate(chla_t = log10(value))
+ss <- chla_dat %>% filter(station == "gtmssnut") %>% mutate(chla_t = log10(value))
+fm <- chla_dat %>% filter(station == "gtmfmnut") %>% mutate(chla_t = log10(value))
+pc <- chla_dat %>% filter(station == "gtmpcnut") %>% mutate(chla_t = log10(value))
+
+```
+
+::: {.panel-tabset}
+
+### Pine Island
+
+```{r}
+par(mfrow=c(1,2)) 
+qqnorm(pi$value, main ="gtmpinut")
+qqline(pi$value)
+
+qqnorm(pi$chla_t, main ="gtmpinut log10")
+qqline(pi$chla_t)
+```
+
+### San Sebastian
+
+```{r}
+qqnorm(ss$value, main ="gtmssnut")
+qqline(ss$value)
+
+qqnorm(ss$chla_t, main ="gtmssnut log10")
+qqline(ss$chla_t)
+```
+
+### Fort Matanzas
+
+```{r}
+qqnorm(fm$value, main ="gtmfmnut")
+qqline(fm$value)
+
+qqnorm(fm$chla_t, main ="gtmfmnut log10")
+qqline(fm$chla_t)
+```
+
+### Pellicer Creek
+
+```{r}
+qqnorm(pc$value, main ="gtmpcnut")
+qqline(pc$value)
+
+qqnorm(pc$chla_t, main ="gtmpcnut log10")
+qqline(pc$chla_t)
+
+```
+
+:::
+
+Shapiro-Wilk Normality Tests on log-10 transformed data
+
+```{r}
+shapiro.test(pi$chla_t)
+shapiro.test(ss$chla_t)
+shapiro.test(fm$chla_t)
+shapiro.test(pc$chla_t)
+
+ks.test(pc$chla_t, 'pnorm')
+
+rm(pi, ss, fm, pc)
+```
+
+Pellicer Creek ("gtmpcnut") fails normality tests even after log10 transformations.
+
+## Trends
+
+From the vignette for `wqtrends`, the generalized additive model (GAM) fits additive smoothing functions to describe variations in the response variable `value` over time, which is measured as a continuous number in `cont_year`. The GAM used in this model is 
+
+chl \~ s(cont_year, k = *large*)
+
+and therefore `anlz_gam()` is used to fit the model. The upper limit of `k` (number of knots) "should be large enough to allow sufficient flexibility in the smoothing term" and is recommended as 12 times the number of years for the input data, however the number of knots can decrease until the data can be modelled (if insufficent data are available). 
+
+::: {.panel-tabset}
+
+### Pine Island
+
+```{r}
+tomod <- chla_dat %>%
+          filter(station %in% "gtmpinut") # only keep pine island data
+
+mod <- wqtrends::anlz_gam(tomod, trans = "log10")
+mod
+```
+
+Now to assess fit of the model by using `anlz_smooth()` to assess individual smoother functions and `anlz_fit()` for overall fit.
+
+```{r}
+anlz_smooth(mod)
+```
+
+from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
+
+```{r}
+anlz_fit(mod)
+```
+
+Estimate results by day of year
+
+```{r}
+ylab <- "Chlorophyll-a (\U00B5g/L)"
+show_prddoy(mod, ylab = ylab) + labs(caption = "gtmpinut")
+
+```
+
+Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.
+
+```{r}
+#| label: fxn-mod1
+
+show_prdseries_mod <-  function (mod, ylab, alpha = 0.7, base_size = 11, xlim = NULL, 
+    ylim = NULL, site) 
+{
+    prds <- anlz_prd(mod)
+    trans <- unique(prds$trans)
+    tobacktrans <- mod$model %>% dplyr::mutate(trans = mod$trans)
+    moddat <- anlz_backtrans(tobacktrans) %>% dplyr::mutate(date = lubridate::date_decimal(cont_year), 
+        date = as.Date(date))
+    p <- ggplot2::ggplot(prds, ggplot2::aes(x = date)) + 
+          ggplot2::geom_point(data = moddat, 
+                    ggplot2::aes(y = value), color = "gray75", size = 1) + 
+      ggplot2::geom_line(ggplot2::aes(y = value), 
+        linewidth = 0.75, alpha = alpha, colour = "#56B4E9") + 
+      ggplot2::theme_bw(base_family = "serif", 
+        base_size = base_size) + 
+      ggplot2::theme(legend.position = "top", 
+        legend.title = ggplot2::element_blank(), 
+        axis.title.x = ggplot2::element_blank(),
+        axis.text = element_text(size = 12, color = "black")) +
+      ggplot2::labs(y = ylab,
+                    title = site) + 
+      ggplot2::coord_cartesian(xlim = xlim, ylim = ylim)
+    if (trans != "ident") 
+        p <- p + ggplot2::scale_y_log10()
+    return(p)
+}
+```
+
+```{r}
+show_prdseries_mod(mod, ylab = "Chlorophyll-a (\U00B5g/L)", site = "gtmpinut")
+```
+
+```{r}
+show_prdseason(mod, ylab = ylab) + labs(caption = "gtmpinut")
+```
+
+```{r}
+#| echo: false
+
+# first 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2012, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 6.6, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2013, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 6.6, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 5 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2018, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 6.6, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# record
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 6.6, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+```
+
+### San Sebastian
+
+```{r}
+tomod <- chla_dat %>%
+          filter(station %in% "gtmssnut") # only keep pine island data
+
+mod <- wqtrends::anlz_gam(tomod, trans = "log10")
+mod
+```
+
+Now to assess fit of the model by using `anlz_smooth()` to assess individual smoother functions and `anlz_fit()` for overall fit.
+
+```{r}
+anlz_smooth(mod)
+```
+
+from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
+
+```{r}
+anlz_fit(mod)
+```
+
+Estimate results by day of year
+
+```{r}
+ylab <- "Chlorophyll-a (\U00B5g/L)"
+show_prddoy(mod, ylab = ylab) + labs(caption = "gtmssnut")
+
+```
+
+Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.
+
+```{r}
+show_prdseries_mod(mod, ylab = "Chlorophyll-a (\U00B5g/L)", site = "gtmssnut")
+```
+
+```{r}
+show_prdseason(mod, ylab = ylab) + labs(caption = "gtmssnut")
+```
+
+```{r}
+#| echo: false
+
+# first 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2012, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.0, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2013, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.0, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 5 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2018, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.0, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# record
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.0, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+```
+
+### Fort Matanzas
+
+```{r}
+tomod <- chla_dat %>%
+          filter(station %in% "gtmfmnut") # only keep pine island data
+
+mod <- wqtrends::anlz_gam(tomod, trans = "log10")
+mod
+```
+
+Now to assess fit of the model by using `anlz_smooth()` to assess individual smoother functions and `anlz_fit()` for overall fit.
+
+```{r}
+anlz_smooth(mod)
+```
+
+from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
+
+```{r}
+anlz_fit(mod)
+```
+
+Estimate results by day of year
+
+```{r}
+ylab <- "Chlorophyll-a (\U00B5g/L)"
+show_prddoy(mod, ylab = ylab) + labs(caption = "gtmfmnut")
+
+```
+
+Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.
+
+```{r}
+show_prdseries_mod(mod, ylab = "Chlorophyll-a (\U00B5g/L)", site = "gtmfmnut")
+```
+
+```{r}
+show_prdseason(mod, ylab = ylab) + labs(caption = "gtmfmnut")
+```
+
+```{r}
+#| echo: false
+
+# first 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2012, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 5.5, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2013, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 5.5, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 5 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2018, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 5.5, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# record
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 5.5, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+```
+
+### Pellicer Creek
+
+*did not meet normality assumptions*
+
+```{r}
+tomod <- chla_dat %>%
+          filter(station %in% "gtmpcnut") # only keep pine island data
+
+mod <- wqtrends::anlz_gam(tomod, trans = "log10")
+mod
+```
+
+Now to assess fit of the model by using `anlz_smooth()` to assess individual smoother functions and `anlz_fit()` for overall fit.
+
+```{r}
+anlz_smooth(mod)
+```
+
+from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
+
+```{r}
+anlz_fit(mod)
+```
+
+Estimate results by day of year
+
+```{r}
+ylab <- "Chlorophyll-a (\U00B5g/L)"
+show_prddoy(mod, ylab = ylab) + labs(caption = "gtmpcnut")
+
+```
+
+Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.
+
+```{r}
+show_prdseries_mod(mod, ylab = "Chlorophyll-a (\U00B5g/L)", site = "gtmpcnut")
+```
+
+```{r}
+show_prdseason(mod, ylab = ylab) + labs(caption = "gtmpcnut")
+```
+
+```{r}
+#| echo: false
+
+# first 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2012, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.3, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 10 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2013, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.3, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# last 5 years
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2018, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.3, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+# record
+show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.3, linetype = "dashed", linewidth = 1, color = "gray75") 
+
+```
+
+:::

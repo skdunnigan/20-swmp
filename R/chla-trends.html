@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.340">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Trends in Chlorophyll</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="chla-trends_files/libs/clipboard/clipboard.min.js"></script>
+<script src="chla-trends_files/libs/quarto-html/quarto.js"></script>
+<script src="chla-trends_files/libs/quarto-html/popper.min.js"></script>
+<script src="chla-trends_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="chla-trends_files/libs/quarto-html/anchor.min.js"></script>
+<link href="chla-trends_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="chla-trends_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="chla-trends_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="chla-trends_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="chla-trends_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Data</a>
+  <ul class="collapse">
+  <li><a href="#collection-methods" id="toc-collection-methods" class="nav-link" data-scroll-target="#collection-methods">Collection Methods</a></li>
+  <li><a href="#the-data-set" id="toc-the-data-set" class="nav-link" data-scroll-target="#the-data-set">The data set</a></li>
+  </ul></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data preparation</a>
+  <ul class="collapse">
+  <li><a href="#selecting-and-filtering-qaqc-flags-and-codes" id="toc-selecting-and-filtering-qaqc-flags-and-codes" class="nav-link" data-scroll-target="#selecting-and-filtering-qaqc-flags-and-codes">Selecting and filtering QAQC flags and codes</a></li>
+  </ul></li>
+  <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis">Data Analysis</a>
+  <ul class="collapse">
+  <li><a href="#normality-testing-and-data-distribution" id="toc-normality-testing-and-data-distribution" class="nav-link" data-scroll-target="#normality-testing-and-data-distribution">Normality testing and data distribution</a></li>
+  <li><a href="#trends" id="toc-trends" class="nav-link" data-scroll-target="#trends">Trends</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Trends in Chlorophyll</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="data" class="level1">
+<h1>Data</h1>
+<section id="collection-methods" class="level2">
+<h2 class="anchored" data-anchor-id="collection-methods">Collection Methods</h2>
+<p>Water samples were collected monthly at each of the four water quality monitoring stations at the GTMNERR for nitrite + nitrate, ammonium, total nitrogen, orthophosphate, total phosphorus, chlorophyll a, and total suspended solids using two types of sampling methods (grab and diel), on the same day during an ebb tide. Grab samples were collected from all stations in duplicate using a pole sampler and bucket. Diel samples were only collected at the Pellicer Creek station at 2.5-hour intervals for a 25-hour (lunar day) period using a Teledyne ISCO automatic sampler equipped with an internal ice bath to keep samples cold. Both grab and diel samples were collected from the approximate depth of the sonde sensors, 1 m above the bottom. Samples were filtered in the field whenever feasible; otherwise, they were placed on ice in the dark and filtered immediately upon returning to the laboratory.</p>
+<p>Water samples collected between January 1, 2003 and June 30, 2010 were collected and analyzed by University of Florida’s (UF) Department of Fisheries and Aquatic Sciences. Samples collected between July 1, 2010 and November 30, 2012 were collected by GTMNERR and analyzed by the UF lab. Samples collected on or after December 1, 2012 were collected by GTMNERR and analyzed by the Florida Department of Environmental Protection’s (FDEP) Central Laboratory. Both laboratories were certified through the National Environmental Laboratory Accreditation Program and used the American Public Health Association and Environmental Protection Agency methods for analyses. Method details can be found in annual metadata files at www.nerrsdata.org.</p>
+</section>
+<section id="the-data-set" class="level2">
+<h2 class="anchored" data-anchor-id="the-data-set">The data set</h2>
+<p>Loading the nutrient data file and cleaning it up for analysis. This file is an appended internal file to the GTMNERR that contains data from 2002-2023 with QC flags and codes and all the parameters included. This data is not included in the GitHub repository, but can be requested from the GTMNERR.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 4,713
+Columns: 81
+$ station_code       &lt;chr&gt; "gtmpcnut", "gtmpcnut", "gtmssnut", "gtmssnut", "gt…
+$ date_time_stamp    &lt;dttm&gt; 2002-05-08 08:15:00, 2002-05-08 08:15:00, 2002-05-…
+$ monitoring_program &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, …
+$ rep                &lt;dbl&gt; 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, …
+$ f_record           &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ po4f               &lt;dbl&gt; 0.056, 0.057, 0.035, 0.029, 0.007, 0.027, 0.009, 0.…
+$ f_po4f             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ tdp                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_tdp              &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ tp                 &lt;dbl&gt; 0.073, 0.074, 0.045, 0.012, 0.034, 0.047, 0.026, 0.…
+$ f_tp               &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ dop                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_dop              &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ phosp              &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_phosp            &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ nh4f               &lt;dbl&gt; 0.054, 0.051, 0.048, 0.057, 0.040, 0.043, 0.038, 0.…
+$ f_nh4f             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ no2f               &lt;dbl&gt; 0.0020, 0.0018, 0.0041, 0.0030, 0.0019, 0.0022, 0.0…
+$ f_no2f             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ no3f               &lt;dbl&gt; 0.0008, 0.0005, 0.0064, 0.0041, 0.0005, 0.0000, 0.0…
+$ f_no3f             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ no23f              &lt;dbl&gt; 0.0028, 0.0023, 0.0105, 0.0071, 0.0024, 0.0022, 0.0…
+$ f_no23f            &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ din                &lt;dbl&gt; 0.057, 0.053, 0.059, 0.064, 0.042, 0.045, 0.040, 0.…
+$ f_din              &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ tdn                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_tdn              &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ tn                 &lt;dbl&gt; 0.5602, 0.5990, 0.3478, 0.3565, 0.4767, 0.4891, 0.3…
+$ f_tn               &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ pn                 &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_pn               &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ tkn                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_tkn              &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ tknf               &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_tknf             &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ ton                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_ton              &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ unc_ch_la_n        &lt;dbl&gt; 15.3, 15.2, 7.1, 6.9, 13.2, 21.0, 5.6, 6.3, 6.3, 4.…
+$ f_unc_ch_la_n      &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ chla_n             &lt;dbl&gt; 12.7, 12.3, 5.8, 5.6, 10.3, 16.1, 4.9, 5.6, 6.0, 3.…
+$ f_chla_n           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ phea               &lt;dbl&gt; 4.8, 5.4, 2.4, 2.4, 5.5, 9.2, 1.4, 1.5, 4.3, 3.1, 5…
+$ f_phea             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ poc                &lt;dbl&gt; 1.478, 1.655, 0.915, 1.069, 1.708, 1.788, 1.163, 1.…
+$ f_poc              &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ si_o4f             &lt;dbl&gt; 3.034, 3.524, 1.586, 2.167, 2.041, 1.711, 0.605, 0.…
+$ f_si_o4f           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ tss                &lt;dbl&gt; 41, NA, 38, NA, NA, NA, 40, NA, 95, 80, 90, 91, 52,…
+$ f_tss              &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ wtem_n             &lt;dbl&gt; 27.1, 27.1, 26.2, 26.2, 27.3, 27.3, 26.4, 26.4, 29.…
+$ f_wtem_n           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ salt_n             &lt;dbl&gt; 23.0, 23.0, 33.7, 33.7, 34.8, 34.8, 33.8, 33.8, 34.…
+$ f_salt_n           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ do_n               &lt;dbl&gt; 4.5, 4.5, 5.1, 5.1, 5.4, 5.4, 6.3, 6.3, 4.0, 4.0, 4…
+$ f_do_n             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ ph_n               &lt;dbl&gt; 7.7, 7.7, 7.8, 7.8, 7.6, 7.6, 8.0, 8.0, 7.6, 7.6, 7…
+$ f_ph_n             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ turb_n             &lt;dbl&gt; 5.0, 4.9, 5.9, 6.0, 7.4, 7.4, 4.3, 4.4, 3.6, 3.6, 4…
+$ f_turb_n           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ color              &lt;dbl&gt; 42, 45, 10, 17, 13, 17, 12, 4, 10, 9, 18, 19, 41, 4…
+$ f_color            &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ secchi             &lt;dbl&gt; 0.9, 0.9, 1.1, 1.1, 0.9, 0.9, 1.5, 1.5, 0.7, 0.7, 0…
+$ f_secchi           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ irr0_n             &lt;dbl&gt; 865.1, 865.1, 853.3, 853.3, 1860.0, 1860.0, 1801.0,…
+$ f_irr0_n           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ irr1_n             &lt;dbl&gt; 59.6, 59.6, 172.1, 172.1, 198.6, 198.6, 698.2, 698.…
+$ f_irr1_n           &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ kd_n               &lt;dbl&gt; 2.675, 2.675, 1.601, 1.601, 2.237, 2.237, 0.948, 0.…
+$ f_kd_n             &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;…
+$ feccol_cfu         &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_feccol_cfu       &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ ecoli_mpn          &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_ecoli_mpn        &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ entero_mpn         &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_entero_mpn       &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ doc                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_doc              &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ don                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_don              &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…
+$ pon                &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,…
+$ f_pon              &lt;chr&gt; "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-1&gt;", "&lt;-…</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="data-preparation" class="level1">
+<h1>Data preparation</h1>
+<section id="selecting-and-filtering-qaqc-flags-and-codes" class="level2">
+<h2 class="anchored" data-anchor-id="selecting-and-filtering-qaqc-flags-and-codes">Selecting and filtering QAQC flags and codes</h2>
+<p>We are interested in examining trends in chlorophyll <em>a</em> (chl-a) for complete years across a 20 year period. Therefore, we are only selecting the chl-a data from 2003-2022 at all stations. This dataset includes both grab and diel collection results, so the diel data will be filtered out as well.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>chla <span class="ot">&lt;-</span> NUT <span class="sc">%&gt;%</span> </span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(rep)) <span class="sc">%&gt;%</span> <span class="co"># remove "S" reps in dataset</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(station_code, <span class="dv">2</span><span class="sc">:</span><span class="dv">5</span>, chla_n, f_chla_n) <span class="sc">%&gt;%</span> <span class="co"># keep only chla data</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>          <span class="fu">rename</span>(<span class="at">datetimestamp =</span> date_time_stamp) <span class="sc">%&gt;%</span> <span class="co"># clean name</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>          <span class="fu">mutate</span>(<span class="at">date =</span> lubridate<span class="sc">::</span><span class="fu">date</span>(datetimestamp)) <span class="sc">%&gt;%</span> <span class="co"># create date variable from POSIXct</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>          <span class="fu">filter</span>(monitoring_program <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> <span class="co"># keep only grab samples (remove DIEL)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>          <span class="fu">select</span>(<span class="sc">-</span>monitoring_program, <span class="sc">-</span>rep) <span class="co"># remove columns once done</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(chla)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 2,012
+Columns: 6
+$ station_code  &lt;chr&gt; "gtmpcnut", "gtmpcnut", "gtmssnut", "gtmssnut", "gtmpinu…
+$ datetimestamp &lt;dttm&gt; 2002-05-08 08:15:00, 2002-05-08 08:15:00, 2002-05-08 09…
+$ f_record      &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, …
+$ chla_n        &lt;dbl&gt; 12.7, 12.3, 5.8, 5.6, 10.3, 16.1, 4.9, 5.6, 6.0, 3.1, 5.…
+$ f_chla_n      &lt;chr&gt; "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", "&lt;4&gt;", …
+$ date          &lt;date&gt; 2002-05-08, 2002-05-08, 2002-05-08, 2002-05-08, 2002-05…</code></pre>
+</div>
+</div>
+<p>The F_Record column contains <a href="https://cdmo.baruch.sc.edu/data/qaqc.cfm">QAQC codes</a> that apply to the entire record. We want to look at what all are included in this dataset.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># examine f_record values for further filtering</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(chla<span class="sc">$</span>f_record)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] NA      "{TSH}" "{CSM}" "{WS2}" "{CLE}" "{CIF}" "{NE}" </code></pre>
+</div>
+</div>
+<p>All of those codes are okay, none of the records require further filtering. Next will be to look at the flags and codes for the chl-a results:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># examine f_chla values for further filtering</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(chla<span class="sc">$</span>f_chla_n)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "&lt;4&gt;"             "&lt;-4&gt; [SBL]"      "&lt;0&gt;"             "&lt;-3&gt; [GQD]"     
+ [5] "&lt;0&gt; (CSM)"       "&lt;1&gt; (CSM)"       "&lt;1&gt; [SRD]"       "&lt;1&gt; (CUS)"      
+ [9] "&lt;1&gt; [SRD] (CSM)" "&lt;-3&gt; (CSM)"     </code></pre>
+</div>
+</div>
+<p>This data contains several records that will not be good to keep for the analysis. Examining the suspect data (“&lt;1&gt;”) it seems a lot of that data contains CSM codes and metadata documentation that says these reference “Laboratory indicated that the values reported are the mean of two or more determinations” and values were estimated. For now, all rejected and suspect data will be removed for analysis. I am keeping the data flagged with “&lt;-4&gt;” which means “below sensor limit”. This just means this data was below the minimum detection limit from lab, but that doesn’t mean that the data isn’t usable.</p>
+<p>So, filtering the data and then averaging the duplicates for a monthly average chl-a at each site <code>value</code> and then reformating it to match the format used for the <code>wqtrends</code> <a href="https://tbep-tech.github.io/wqtrends/articles/introduction.html">workflow</a> <span class="citation" data-cites="beck2022">(<a href="#ref-beck2022" role="doc-biblioref">Beck et al. 2022</a>)</span>. This means adding a few columns such as <code>doy</code> (day of year), <code>cont_year</code> (date in decimal time), <code>yr</code> (year), <code>mo</code> (month as character label), and <code>param</code> which is probably not necessary, but since it was included in the vignette, I added a column to make it clear this is chl-a data. This is also where I filtered to remove 2002 and 2023 data since they are not of interest for this trend analysis.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># prep data for GAM</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>chla_dat <span class="ot">&lt;-</span> chla <span class="sc">%&gt;%</span> </span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">grepl</span>(<span class="fu">c</span>(<span class="st">"&lt;-3&gt;"</span>), f_chla_n) <span class="sc">&amp;</span> </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>                       <span class="sc">!</span><span class="fu">grepl</span>(<span class="fu">c</span>(<span class="st">"&lt;1&gt;"</span>), f_chla_n)) <span class="sc">%&gt;%</span> <span class="co"># remove rejected and suspect data</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">select</span>(<span class="sc">-</span>f_record, <span class="sc">-</span>f_chla_n) <span class="sc">%&gt;%</span> <span class="co"># remove qc columns after filtering</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>              <span class="fu">group_by</span>(station_code, date) <span class="sc">%&gt;%</span> <span class="co"># group by station and date to average duplicates</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">summarise</span>(<span class="at">value =</span> <span class="fu">mean</span>(chla_n, <span class="at">na.rm =</span> T)) <span class="sc">%&gt;%</span> <span class="co"># avg duplicates</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>              <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>              <span class="fu">mutate</span>(<span class="at">doy =</span> lubridate<span class="sc">::</span><span class="fu">yday</span>(date), <span class="co"># day of the year</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cont_year =</span> lubridate<span class="sc">::</span><span class="fu">decimal_date</span>(date), <span class="co"># date in decimal time</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">yr =</span> lubridate<span class="sc">::</span><span class="fu">year</span>(date), <span class="co"># year</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">mo =</span> lubridate<span class="sc">::</span><span class="fu">month</span>(date, <span class="at">label =</span> <span class="cn">TRUE</span>), <span class="co"># month</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>                     <span class="at">param =</span> <span class="st">"chla"</span>) <span class="sc">%&gt;%</span> <span class="co"># add param name</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>              <span class="fu">rename</span>(<span class="at">station =</span> station_code) <span class="sc">%&gt;%</span> <span class="co"># clean variable name</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>              <span class="fu">filter</span>(yr <span class="sc">&gt;</span> <span class="dv">2002</span> <span class="sc">&amp;</span> yr <span class="sc">&lt;</span> <span class="dv">2023</span>) <span class="co"># only keep data from 2003-2022</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(chla_dat)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+  station  date       value   doy cont_year    yr mo    param
+  &lt;chr&gt;    &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;ord&gt; &lt;chr&gt;
+1 gtmfmnut 2003-01-22  0.25    22     2003.  2003 Jan   chla 
+2 gtmfmnut 2003-02-26  1.2     57     2003.  2003 Feb   chla 
+3 gtmfmnut 2003-03-26  1.5     85     2003.  2003 Mar   chla 
+4 gtmfmnut 2003-04-29  5.05   119     2003.  2003 Apr   chla 
+5 gtmfmnut 2003-05-27  3.15   147     2003.  2003 May   chla 
+6 gtmfmnut 2003-06-25  3.45   176     2003.  2003 Jun   chla </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="data-analysis" class="level1">
+<h1>Data Analysis</h1>
+<section id="normality-testing-and-data-distribution" class="level2">
+<h2 class="anchored" data-anchor-id="normality-testing-and-data-distribution">Normality testing and data distribution</h2>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>chla_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">station =</span> <span class="fu">factor</span>(station, </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"gtmpcnut"</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"gtmfmnut"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"gtmssnut"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"gtmpinut"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> value, <span class="at">y =</span> station, <span class="at">fill =</span> station)) <span class="sc">+</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  ggdist<span class="sc">::</span><span class="fu">stat_slab</span>(<span class="fu">aes</span>(<span class="at">thickness =</span> <span class="fu">after_stat</span>(pdf<span class="sc">*</span>n)), <span class="at">scale =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  ggdist<span class="sc">::</span><span class="fu">stat_dotsinterval</span>(<span class="at">side =</span> <span class="st">"bottom"</span>, <span class="at">scale =</span> <span class="fl">0.7</span>, <span class="at">slab_linewidth =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>) <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span>,</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">""</span>,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Identity"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>chla_dat <span class="sc">%&gt;%</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">station =</span> <span class="fu">factor</span>(station, </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                          <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"gtmpcnut"</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"gtmfmnut"</span>,</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"gtmssnut"</span>,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>                                     <span class="st">"gtmpinut"</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">log10</span>(value), <span class="at">y =</span> station, <span class="at">fill =</span> station)) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  ggdist<span class="sc">::</span><span class="fu">stat_slab</span>(<span class="fu">aes</span>(<span class="at">thickness =</span> <span class="fu">after_stat</span>(pdf<span class="sc">*</span>n)), <span class="at">scale =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  ggdist<span class="sc">::</span><span class="fu">stat_dotsinterval</span>(<span class="at">side =</span> <span class="st">"bottom"</span>, <span class="at">scale =</span> <span class="fl">0.7</span>, <span class="at">slab_linewidth =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>) <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>() <span class="sc">+</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>) <span class="sc">+</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span>,</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">""</span>,</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"Log-10 Transformation"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>pi <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(station <span class="sc">==</span> <span class="st">"gtmpinut"</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">chla_t =</span> <span class="fu">log10</span>(value))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>ss <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(station <span class="sc">==</span> <span class="st">"gtmssnut"</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">chla_t =</span> <span class="fu">log10</span>(value))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>fm <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(station <span class="sc">==</span> <span class="st">"gtmfmnut"</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">chla_t =</span> <span class="fu">log10</span>(value))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>pc <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span> <span class="fu">filter</span>(station <span class="sc">==</span> <span class="st">"gtmpcnut"</span>) <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">chla_t =</span> <span class="fu">log10</span>(value))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true" href="">Pine Island</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false" href="">San Sebastian</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false" href="">Fort Matanzas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-4" role="tab" aria-controls="tabset-1-4" aria-selected="false" href="">Pellicer Creek</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">par</span>(<span class="at">mfrow=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>)) </span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(pi<span class="sc">$</span>value, <span class="at">main =</span><span class="st">"gtmpinut"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(pi<span class="sc">$</span>value)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(pi<span class="sc">$</span>chla_t, <span class="at">main =</span><span class="st">"gtmpinut log10"</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(pi<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-1-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-2-tab">
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(ss<span class="sc">$</span>value, <span class="at">main =</span><span class="st">"gtmssnut"</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(ss<span class="sc">$</span>value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(ss<span class="sc">$</span>chla_t, <span class="at">main =</span><span class="st">"gtmssnut log10"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(ss<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-11-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-1-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-3-tab">
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(fm<span class="sc">$</span>value, <span class="at">main =</span><span class="st">"gtmfmnut"</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(fm<span class="sc">$</span>value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(fm<span class="sc">$</span>chla_t, <span class="at">main =</span><span class="st">"gtmfmnut log10"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(fm<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-12-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-1-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-1-4-tab">
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(pc<span class="sc">$</span>value, <span class="at">main =</span><span class="st">"gtmpcnut"</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(pc<span class="sc">$</span>value)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">qqnorm</span>(pc<span class="sc">$</span>chla_t, <span class="at">main =</span><span class="st">"gtmpcnut log10"</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">qqline</span>(pc<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-13-2.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<p>Shapiro-Wilk Normality Tests on log-10 transformed data</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(pi<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  pi$chla_t
+W = 0.99507, p-value = 0.6496</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(ss<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  ss$chla_t
+W = 0.99376, p-value = 0.4398</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(fm<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  fm$chla_t
+W = 0.98011, p-value = 0.002123</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(pc<span class="sc">$</span>chla_t)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  pc$chla_t
+W = 0.89606, p-value = 1.52e-11</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ks.test</span>(pc<span class="sc">$</span>chla_t, <span class="st">'pnorm'</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Asymptotic one-sample Kolmogorov-Smirnov test
+
+data:  pc$chla_t
+D = 0.51809, p-value &lt; 2.2e-16
+alternative hypothesis: two-sided</code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(pi, ss, fm, pc)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Pellicer Creek (“gtmpcnut”) fails normality tests even after log10 transformations.</p>
+</section>
+<section id="trends" class="level2">
+<h2 class="anchored" data-anchor-id="trends">Trends</h2>
+<p>From the vignette for <code>wqtrends</code>, the generalized additive model (GAM) fits additive smoothing functions to describe variations in the response variable <code>value</code> over time, which is measured as a continuous number in <code>cont_year</code>. The GAM used in this model is</p>
+<p>chl ~ s(cont_year, k = <em>large</em>)</p>
+<p>and therefore <code>anlz_gam()</code> is used to fit the model. The upper limit of <code>k</code> (number of knots) “should be large enough to allow sufficient flexibility in the smoothing term” and is recommended as 12 times the number of years for the input data, however the number of knots can decrease until the data can be modelled (if insufficent data are available).</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-2-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-1" role="tab" aria-controls="tabset-2-1" aria-selected="true" href="">Pine Island</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-2" role="tab" aria-controls="tabset-2-2" aria-selected="false" href="">San Sebastian</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-3" role="tab" aria-controls="tabset-2-3" aria-selected="false" href="">Fort Matanzas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-2-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-2-4" role="tab" aria-controls="tabset-2-4" aria-selected="false" href="">Pellicer Creek</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-2-1-tab">
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>tomod <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">filter</span>(station <span class="sc">%in%</span> <span class="st">"gtmpinut"</span>) <span class="co"># only keep pine island data</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> wqtrends<span class="sc">::</span><span class="fu">anlz_gam</span>(tomod, <span class="at">trans =</span> <span class="st">"log10"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>reducing knots for cont_year spline from 240 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>mod</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+value ~ s(cont_year, k = 220)
+
+Estimated degrees of freedom:
+83.3  total = 84.33 
+
+GCV score: 0.03131698     </code></pre>
+</div>
+</div>
+<p>Now to assess fit of the model by using <code>anlz_smooth()</code> to assess individual smoother functions and <code>anlz_fit()</code> for overall fit.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_smooth</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      smoother      edf   Ref.df        F p.value
+1 s(cont_year) 83.32591 103.2462 4.137228       0</code></pre>
+</div>
+</div>
+<p>from the help: <em>“the estimated degrees of freedom (<code>edf</code>), the reference degrees of freedom (<code>Ref.df</code>), the test statistic (<code>F</code>), and significance of the component (<code>p-value</code>). The significance of the component is in part based on the difference between <code>edf</code> and <code>Ref.df</code>.”</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_fit</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>             AIC        GCV        R2
+GCV.Cp -185.2911 0.03131698 0.6308997</code></pre>
+</div>
+</div>
+<p>Estimate results by day of year</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>ylab <span class="ot">&lt;-</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prddoy</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmpinut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>show_prdseries_mod <span class="ot">&lt;-</span>  <span class="cf">function</span> (mod, ylab, <span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">base_size =</span> <span class="dv">11</span>, <span class="at">xlim =</span> <span class="cn">NULL</span>, </span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>    <span class="at">ylim =</span> <span class="cn">NULL</span>, site) </span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>    prds <span class="ot">&lt;-</span> <span class="fu">anlz_prd</span>(mod)</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    trans <span class="ot">&lt;-</span> <span class="fu">unique</span>(prds<span class="sc">$</span>trans)</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>    tobacktrans <span class="ot">&lt;-</span> mod<span class="sc">$</span>model <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">trans =</span> mod<span class="sc">$</span>trans)</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    moddat <span class="ot">&lt;-</span> <span class="fu">anlz_backtrans</span>(tobacktrans) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">date =</span> lubridate<span class="sc">::</span><span class="fu">date_decimal</span>(cont_year), </span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">date =</span> <span class="fu">as.Date</span>(date))</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    p <span class="ot">&lt;-</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(prds, ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">x =</span> date)) <span class="sc">+</span> </span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">geom_point</span>(<span class="at">data =</span> moddat, </span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>                    ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> value), <span class="at">color =</span> <span class="st">"gray75"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span> </span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">geom_line</span>(ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> value), </span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>        <span class="at">linewidth =</span> <span class="fl">0.75</span>, <span class="at">alpha =</span> alpha, <span class="at">colour =</span> <span class="st">"#56B4E9"</span>) <span class="sc">+</span> </span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>(<span class="at">base_family =</span> <span class="st">"serif"</span>, </span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>        <span class="at">base_size =</span> base_size) <span class="sc">+</span> </span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"top"</span>, </span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title =</span> ggplot2<span class="sc">::</span><span class="fu">element_blank</span>(), </span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> ggplot2<span class="sc">::</span><span class="fu">element_blank</span>(),</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>, <span class="at">color =</span> <span class="st">"black"</span>)) <span class="sc">+</span></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">y =</span> ylab,</span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>                    <span class="at">title =</span> site) <span class="sc">+</span> </span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>      ggplot2<span class="sc">::</span><span class="fu">coord_cartesian</span>(<span class="at">xlim =</span> xlim, <span class="at">ylim =</span> ylim)</span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (trans <span class="sc">!=</span> <span class="st">"ident"</span>) </span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>        p <span class="ot">&lt;-</span> p <span class="sc">+</span> ggplot2<span class="sc">::</span><span class="fu">scale_y_log10</span>()</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(p)</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseries_mod</span>(mod, <span class="at">ylab =</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span>, <span class="at">site =</span> <span class="st">"gtmpinut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseason</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmpinut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-22-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-22-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-22-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-2-tab">
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>tomod <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">filter</span>(station <span class="sc">%in%</span> <span class="st">"gtmssnut"</span>) <span class="co"># only keep pine island data</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> wqtrends<span class="sc">::</span><span class="fu">anlz_gam</span>(tomod, <span class="at">trans =</span> <span class="st">"log10"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>reducing knots for cont_year spline from 240 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>mod</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+value ~ s(cont_year, k = 220)
+
+Estimated degrees of freedom:
+76.3  total = 77.29 
+
+GCV score: 0.02431479     </code></pre>
+</div>
+</div>
+<p>Now to assess fit of the model by using <code>anlz_smooth()</code> to assess individual smoother functions and <code>anlz_fit()</code> for overall fit.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_smooth</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      smoother      edf   Ref.df        F p.value
+1 s(cont_year) 76.29136 94.69491 4.245355       0</code></pre>
+</div>
+</div>
+<p>from the help: <em>“the estimated degrees of freedom (<code>edf</code>), the reference degrees of freedom (<code>Ref.df</code>), the test statistic (<code>F</code>), and significance of the component (<code>p-value</code>). The significance of the component is in part based on the difference between <code>edf</code> and <code>Ref.df</code>.”</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_fit</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>             AIC        GCV        R2
+GCV.Cp -236.6915 0.02431479 0.6172907</code></pre>
+</div>
+</div>
+<p>Estimate results by day of year</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>ylab <span class="ot">&lt;-</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prddoy</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmssnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseries_mod</span>(mod, <span class="at">ylab =</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span>, <span class="at">site =</span> <span class="st">"gtmssnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseason</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmssnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-29-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-29-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-29-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-3-tab">
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>tomod <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">filter</span>(station <span class="sc">%in%</span> <span class="st">"gtmfmnut"</span>) <span class="co"># only keep pine island data</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> wqtrends<span class="sc">::</span><span class="fu">anlz_gam</span>(tomod, <span class="at">trans =</span> <span class="st">"log10"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>reducing knots for cont_year spline from 240 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>mod</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+value ~ s(cont_year, k = 220)
+
+Estimated degrees of freedom:
+102  total = 103.47 
+
+GCV score: 0.02779626     </code></pre>
+</div>
+</div>
+<p>Now to assess fit of the model by using <code>anlz_smooth()</code> to assess individual smoother functions and <code>anlz_fit()</code> for overall fit.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_smooth</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      smoother     edf  Ref.df        F p.value
+1 s(cont_year) 102.466 126.214 6.465292       0</code></pre>
+</div>
+</div>
+<p>from the help: <em>“the estimated degrees of freedom (<code>edf</code>), the reference degrees of freedom (<code>Ref.df</code>), the test statistic (<code>F</code>), and significance of the component (<code>p-value</code>). The significance of the component is in part based on the difference between <code>edf</code> and <code>Ref.df</code>.”</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_fit</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>            AIC        GCV        R2
+GCV.Cp -239.223 0.02779626 0.7692602</code></pre>
+</div>
+</div>
+<p>Estimate results by day of year</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>ylab <span class="ot">&lt;-</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span></span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prddoy</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmfmnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-33-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseries_mod</span>(mod, <span class="at">ylab =</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span>, <span class="at">site =</span> <span class="st">"gtmfmnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-34-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseason</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmfmnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-36-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-36-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-36-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-36-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+<div id="tabset-2-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-2-4-tab">
+<p><em>did not meet normality assumptions</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>tomod <span class="ot">&lt;-</span> chla_dat <span class="sc">%&gt;%</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>          <span class="fu">filter</span>(station <span class="sc">%in%</span> <span class="st">"gtmpcnut"</span>) <span class="co"># only keep pine island data</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>mod <span class="ot">&lt;-</span> wqtrends<span class="sc">::</span><span class="fu">anlz_gam</span>(tomod, <span class="at">trans =</span> <span class="st">"log10"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>reducing knots for cont_year spline from 240 </code></pre>
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>mod</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Family: gaussian 
+Link function: identity 
+
+Formula:
+value ~ s(cont_year, k = 220)
+
+Estimated degrees of freedom:
+75.2  total = 76.19 
+
+GCV score: 0.1121514     </code></pre>
+</div>
+</div>
+<p>Now to assess fit of the model by using <code>anlz_smooth()</code> to assess individual smoother functions and <code>anlz_fit()</code> for overall fit.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_smooth</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>      smoother      edf  Ref.df        F p.value
+1 s(cont_year) 75.19408 93.3173 4.021932       0</code></pre>
+</div>
+</div>
+<p>from the help: <em>“the estimated degrees of freedom (<code>edf</code>), the reference degrees of freedom (<code>Ref.df</code>), the test statistic (<code>F</code>), and significance of the component (<code>p-value</code>). The significance of the component is in part based on the difference between <code>edf</code> and <code>Ref.df</code>.”</em></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anlz_fit</span>(mod)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>            AIC       GCV        R2
+GCV.Cp 119.6183 0.1121514 0.6031311</code></pre>
+</div>
+</div>
+<p>Estimate results by day of year</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>ylab <span class="ot">&lt;-</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span></span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prddoy</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmpcnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseries_mod</span>(mod, <span class="at">ylab =</span> <span class="st">"Chlorophyll-a (\U00B5g/L)"</span>, <span class="at">site =</span> <span class="st">"gtmpcnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-41-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_prdseason</span>(mod, <span class="at">ylab =</span> ylab) <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">caption =</span> <span class="st">"gtmpcnut"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-43-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-43-3.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="chla-trends_files/figure-html/unnamed-chunk-43-4.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</section>
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" role="list">
+<div id="ref-beck2022" class="csl-entry" role="listitem">
+Beck, Marcus W., Perry De Valpine, Rebecca Murphy, Ian Wren, Ariella Chelsky, Melissa Foley, and David B. Senn. 2022. <span>“Multi-Scale Trend Analysis of Water Quality Using Error Propagation of Generalized Additive Models.”</span> <em>Science of The Total Environment</em> 802 (January): 149927. <a href="https://doi.org/10.1016/j.scitotenv.2021.149927">https://doi.org/10.1016/j.scitotenv.2021.149927</a>.
+</div>
+</div></section></div></main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
