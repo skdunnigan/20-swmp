@@ -4,6 +4,7 @@ format:
   html:
     toc: true
     code-fold: true
+    embed-resources: true
 execute: 
   warning: false
   message: false
@@ -110,6 +111,8 @@ unique(chla$f_chla_n)
 
 This data contains several records that will not be good to keep for the analysis. Examining the suspect data ("\<1\>") it seems a lot of that data contains CSM codes and metadata documentation that says these reference "Laboratory indicated that the values reported are the mean of two or more determinations" and values were estimated. For now, all rejected and suspect data will be removed for analysis. I am keeping the data flagged with "\<-4\>" which means "below sensor limit". This just means this data was below the minimum detection limit from lab, but that doesn't mean that the data isn't usable.
 
+## Formatting for analysis
+
 So, filtering the data and then averaging the duplicates for a monthly average chl-a at each site `value` and then reformating it to match the format used for the `wqtrends` [workflow](https://tbep-tech.github.io/wqtrends/articles/introduction.html) [@beck2022]. This means adding a few columns such as `doy` (day of year), `cont_year` (date in decimal time), `yr` (year), `mo` (month as character label), and `param` which is probably not necessary, but since it was included in the vignette, I added a column to make it clear this is chl-a data. This is also where I filtered to remove 2002 and 2023 data since they are not of interest for this trend analysis.
 
 ```{r}
@@ -135,7 +138,9 @@ head(chla_dat)
 
 # Data Analysis
 
-## Normality testing and data distribution
+## Data distribution
+
+Look at distribution of data points using the `ggdist` package along with `ggplot2` to plot out the bell shape along with the distribution of points (underneath). The data is highly skewed.
 
 ```{r}
 chla_dat %>% 
@@ -155,6 +160,8 @@ chla_dat %>%
        title = "Identity") 
 ```
 
+Replotted the data with a log-10 transformation of the data. The data looks much better, though gtmpcnut is still curious. Examining the extreme values (+30ug/L) at PC, they are "good" data points and should not be removed.
+
 ```{r}
 chla_dat %>% 
   mutate(station = factor(station, 
@@ -173,6 +180,8 @@ chla_dat %>%
        title = "Log-10 Transformation") 
 ```
 
+## Q-Q plots
+
 ```{r}
 pi <- chla_dat %>% filter(station == "gtmpinut") %>% mutate(chla_t = log10(value))
 ss <- chla_dat %>% filter(station == "gtmssnut") %>% mutate(chla_t = log10(value))
@@ -181,7 +190,7 @@ pc <- chla_dat %>% filter(station == "gtmpcnut") %>% mutate(chla_t = log10(value
 
 ```
 
-::: {.panel-tabset}
+::: {.panel-tabset group = "site"}
 
 ### Pine Island
 
@@ -197,6 +206,7 @@ qqline(pi$chla_t)
 ### San Sebastian
 
 ```{r}
+par(mfrow=c(1,2)) 
 qqnorm(ss$value, main ="gtmssnut")
 qqline(ss$value)
 
@@ -207,6 +217,7 @@ qqline(ss$chla_t)
 ### Fort Matanzas
 
 ```{r}
+par(mfrow=c(1,2)) 
 qqnorm(fm$value, main ="gtmfmnut")
 qqline(fm$value)
 
@@ -216,7 +227,10 @@ qqline(fm$chla_t)
 
 ### Pellicer Creek
 
+gtmpcnut has a non-normal distribution, even after the log-10 transformation.
+
 ```{r}
+par(mfrow=c(1,2)) 
 qqnorm(pc$value, main ="gtmpcnut")
 qqline(pc$value)
 
@@ -226,6 +240,8 @@ qqline(pc$chla_t)
 ```
 
 :::
+
+## Normality Testing
 
 Shapiro-Wilk Normality Tests on log-10 transformed data
 
@@ -240,7 +256,7 @@ ks.test(pc$chla_t, 'pnorm')
 rm(pi, ss, fm, pc)
 ```
 
-Pellicer Creek ("gtmpcnut") fails normality tests even after log10 transformations.
+Pellicer Creek ("gtmpcnut") fails normality tests (Shapiro-Wilk and Kolmogorov-Smirnov Tests) even after log10 transformations.
 
 ## Trends
 
@@ -248,9 +264,9 @@ From the vignette for `wqtrends`, the generalized additive model (GAM) fits addi
 
 chl \~ s(cont_year, k = *large*)
 
-and therefore `anlz_gam()` is used to fit the model. The upper limit of `k` (number of knots) "should be large enough to allow sufficient flexibility in the smoothing term" and is recommended as 12 times the number of years for the input data, however the number of knots can decrease until the data can be modelled (if insufficent data are available). 
+and therefore `anlz_gam()` is used to fit the model. The upper limit of `k` (number of knots) *"should be large enough to allow sufficient flexibility in the smoothing term"* and is recommended as 12 times the number of years for the input data, however the number of knots can decrease until the data can be modeled (if insufficent data are available). 
 
-::: {.panel-tabset}
+::: {.panel-tabset group = "site"}
 
 ### Pine Island
 
@@ -262,17 +278,17 @@ mod <- wqtrends::anlz_gam(tomod, trans = "log10")
 mod
 ```
 
+"GCV" is the generalized cross-validation score, which minimizes out-of-sample prediction error. It penalizes the net curve of a spline.
+
 Now to assess fit of the model by using `anlz_smooth()` to assess individual smoother functions and `anlz_fit()` for overall fit.
 
 ```{r}
 anlz_smooth(mod)
-```
 
-from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
-
-```{r}
 anlz_fit(mod)
 ```
+
+Using the basic smoother with just `cont_year` as a variable, the test statistics are okay. The AIC is low and there is a decent R2 value.
 
 Estimate results by day of year
 
@@ -282,7 +298,7 @@ show_prddoy(mod, ylab = ylab) + labs(caption = "gtmpinut")
 
 ```
 
-Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted.
+Predictions for the model across the entire time series. Points are the observed data and the lines are the predicted. I have modified the `show_prdseries()` function from the `wqtrends` package to `show_prdseries_mod()` for basic aesthetic changes.
 
 ```{r}
 #| label: fxn-mod1
