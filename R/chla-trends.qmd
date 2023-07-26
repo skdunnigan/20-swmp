@@ -91,6 +91,7 @@ chla <- NUT %>%
           select(-monitoring_program, -rep) # remove columns once done
 
 glimpse(chla)
+
 ```
 
 The F_Record column contains [QAQC codes](https://cdmo.baruch.sc.edu/data/qaqc.cfm) that apply to the entire record. We want to look at what all are included in this dataset.
@@ -109,18 +110,39 @@ unique(chla$f_chla_n)
 
 ```
 
-This data contains several records that will not be good to keep for the analysis. Examining the suspect data ("\<1\>") it seems a lot of that data contains CSM codes and metadata documentation that says these reference "Laboratory indicated that the values reported are the mean of two or more determinations" and values were estimated. For now, all rejected and suspect data will be removed for analysis. I am keeping the data flagged with "\<-4\>" which means "below sensor limit". This just means this data was below the minimum detection limit from lab, but that doesn't mean that the data isn't usable.
+This data contains several records that will not be good to keep for the analysis. Examining the suspect data ("\<1\>") it seems a lot of that data contains CSM codes and metadata documentation that says these reference "Laboratory indicated that the values reported are the mean of two or more determinations" and values were estimated. For now, all rejected and suspect data will be removed for analysis. I also removed the data flagged with "\<-4\>" which means "below sensor limit". This means this data was below the minimum detection limit from lab.
+
+### Nominal base MDL
+
+There are also quite a few very low values that occur early on in the timeseries:
+
+```{r}
+head(chla %>% arrange(chla_n))
+```
+
+These values fall below the nominal base minimum detection limit (MDL) for chl-a used in the last 10 years of the record which is 0.55($\mu$g/L). Therefore, any values less than this MDL will be set to that MDL. This will apply to these records:
+
+```{r}
+chla %>% filter(chla_n < 0.55)
+```
+
+This will replace all these values with the nominal base MDL of 0.55($\mu$g/L).
+
+```{r}
+chla$chla_n[chla$chla_n < 0.55] <- 0.55 # replace all values below nominal base mdl of 0.55 with the base mdl 0.55
+```
 
 ## Formatting for analysis
 
-So, filtering the data and then averaging the duplicates for a monthly average chl-a at each site `value` and then reformating it to match the format used for the `wqtrends` [workflow](https://tbep-tech.github.io/wqtrends/articles/introduction.html) [@beck2022]. This means adding a few columns such as `doy` (day of year), `cont_year` (date in decimal time), `yr` (year), `mo` (month as character label), and `param` which is probably not necessary, but since it was included in the vignette, I added a column to make it clear this is chl-a data. This is also where I filtered to remove 2002 and 2023 data since they are not of interest for this trend analysis.
+So, filtering the data to remove unusable QC data, then averaging the duplicates for a monthly average chl-a at each site (`value`), and then adding information to match the format used for the `wqtrends` [workflow](https://tbep-tech.github.io/wqtrends/articles/introduction.html) [@beck2022]. This means adding a few columns such as `doy` (day of year), `cont_year` (date in decimal time), `yr` (year), `mo` (month as character label), and `param` which is probably not necessary, but since it was included in the vignette, I added a column to make it clear this is chl-a data. This is also where I filtered to remove 2002 and 2023 data since they are not of interest for this trend analysis.
 
 ```{r}
 # prep data for GAM
 
 chla_dat <- chla %>% 
               filter(!grepl(c("<-3>"), f_chla_n) & 
-                       !grepl(c("<1>"), f_chla_n)) %>% # remove rejected and suspect data
+                       !grepl(c("<1>"), f_chla_n) &
+                        !grepl(c("<-4>"), f_chla_n)) %>% # remove rejected and suspect data
               select(-f_record, -f_chla_n) %>% # remove qc columns after filtering
               group_by(station_code, date) %>% # group by station and date to average duplicates
               summarise(value = mean(chla_n, na.rm = T)) %>% # avg duplicates
@@ -160,7 +182,7 @@ chla_dat %>%
        title = "Identity") 
 ```
 
-Replotted the data with a log-10 transformation of the data. The data looks much better, though gtmpcnut is still curious. Examining the extreme values (+30ug/L) at PC, they are "good" data points and should not be removed.
+Replotted the data with a log-10 transformation of the data. The data looks much better, although gtmpcnut is still curious. 
 
 ```{r}
 chla_dat %>% 
@@ -182,6 +204,8 @@ chla_dat %>%
 
 ## Q-Q plots
 
+The data should fall along a straight diagonal line.
+
 ```{r}
 pi <- chla_dat %>% filter(station == "gtmpinut") %>% mutate(chla_t = log10(value))
 ss <- chla_dat %>% filter(station == "gtmssnut") %>% mutate(chla_t = log10(value))
@@ -189,6 +213,7 @@ fm <- chla_dat %>% filter(station == "gtmfmnut") %>% mutate(chla_t = log10(value
 pc <- chla_dat %>% filter(station == "gtmpcnut") %>% mutate(chla_t = log10(value))
 
 ```
+
 
 ::: {.panel-tabset group = "site"}
 
@@ -266,7 +291,7 @@ chl \~ s(cont_year, k = *large*)
 
 and therefore `anlz_gam()` is used to fit the model. The upper limit of `k` (number of knots) *"should be large enough to allow sufficient flexibility in the smoothing term"* and is recommended as 12 times the number of years for the input data, however the number of knots can decrease until the data can be modeled (if insufficent data are available). 
 
-::: {.panel-tabset group = "site"}
+::: {.panel-tabset}
 
 ### Pine Island
 
@@ -530,3 +555,192 @@ show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2022, ylab =
 ```
 
 :::
+
+## Variability
+
+Using methods from @cloern2010, variability and patterns in the monthly chlorophyll *a* data were further extracted by decomposing the timeseries at each station using Equation 4 into an annual effect, mean seasonal pattern, and residual "events".
+
+::: callout-note
+### Equation 4 from @cloern2010:
+
+$$
+c_{ij}=Cy_im_j\epsilon_{ij}
+$$ Where $c_{ij}$ is chlorophyll concentration in year $i$($i=1,...,N$) and month $j$($j=1,...12$); *C* is the long-term mean of the series; $y_i$ is the annual effect in the *i*th year; $m_j$ is the seasonal (monthly) effect in the *j*th month; and $\epsilon_{ij}$ is the residual.
+
+-   If $y_i$ \>1, indicates a year with above-average mean Chl-*a*.
+-   If $m_j$ \>1, indicates a mean monthly Chl-*a* greater than the annual mean.
+-   If $\epsilon_{ij}$ \>1, indicates an observation greater than the expected value for that month and year.
+:::
+
+```{r}
+#| label: decomp-fxn
+#| include: false
+
+# function comes from Cloern and Jassby 2010 Supplemental Material
+
+decomp.mult <- function(x, startyr = NULL , endyr = NULL, event = T){
+#R2 .8.0 3/2/09 4:48 PM
+  if(class(x)[1]!='mts') dim(x)=c(length(x),1)
+  
+  if(is.null(startyr)) startyr <- start(x)[1]
+  
+  if(is.null(endyr)) endyr <- end(x)[1]
+  
+  d <- window(x, start = c(startyr,1), end = c(endyr,12), extend = T)
+  
+  results <- vector('list',dim(d)[2])
+  
+  names(results)= colnames(d)
+  
+  for(site in colnames (d)){
+    d1=d[,site]
+    
+    #long-term mean
+    grandmean = mean(d1, na.rm = T)
+    
+    # annual component
+    annualmean = aggregate(d1,1, mean, na.rm = T)
+    annualmeanreps = as.vector(t(matrix(rep(annualmean,12), 
+                                        ncol = 12)))
+    interann = ts(annualmeanreps,s=c(startyr,1),f = 12) / grandmean
+    # remaining components
+    if(event) {
+      # monthly component
+      d2 = matrix(d1, nrow = 12)
+      monthdev = sweep(d2,2, annualmean ,'/')
+      monthmean = apply(monthdev,1, mean , na.rm = T)
+      season = ts(rep(monthmean, endyr - startyr + 1), 
+                  s=c(startyr, 1), f = 12)
+      # events component
+      resids = sweep(monthdev, 1, monthmean , '/')
+      events = ts(as.vector(resids),
+                  s=c(startyr, 1),f = 12)
+    }
+    else {
+      # monthly component
+      season = d1/(grandmean * interann)
+    }
+    # prepare output
+    if(event) dcomp = ts.union(d1, grandmean, interann, season,
+      events) else dcomp =ts.union (d1, grandmean, interann,
+      season)
+    colnames(dcomp)[1]= 'original'
+    results[[site]]= dcomp
+    }
+    if(class(x)[1]!='mts') results[[1]] else results
+}
+```
+
+In order to decompose the timeseries, there cannot be any gaps in the data. I need to identify gaps and fill them with NAs
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmpinut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmpinut needs NAs placed for 2005-01, 06-2009, 02-2010, 08-2015, 08-2020.
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmssnut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmssnut needs NAs placed for 2005-01, 06-2009, 02-2010, 09-2019, 08-2020, 07-2022
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmfmnut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmfmnut needs NAs placed for 2005-01, 06-2009, 02-2010, 11-2015
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmpcnut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmpcnut needs NAs placed for 2003-01, 2005-01, 2009-09, 2010-02, 2013-07, 2015-08, 2015-09, 2018-11, 2020-07, 2022-04, 2022-07, 2022-08
+
+*this may be why the data is not normally distributed...too much is missing. May need to see if I can use the ISCO data to fill in the missing information.*
+
+
+
+```{r}
+#| label: dat-ts
+#| include: false
+
+# 2005-01-01 is missing from all four sites, need to build in a placeholder for it
+mis <- tribble(
+  ~date, ~value,
+  "2005-01-01", NA
+) %>% mutate(date = as.Date(date),
+             value = as.numeric(value))
+# pc is missing 2003-01 and 2005-01
+ts_chla <- function(station){
+  ts(as.data.frame(chla_dat %>% 
+                              filter(station == {{station}}) %>%
+                              select(date, value) %>% 
+                              bind_rows(mis) %>% 
+                              arrange(date) %>% 
+                              select(value)),
+              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
+              end = c(2022,12),
+              frequency = 12) # monthly
+  
+}
+
+# create timeseries objects of chlorophyll data
+chla_pi <- ts(as.data.frame(chla_dat %>% 
+                              filter(station == "gtmssnut") %>%
+                              select(date, value) %>% 
+                              # bind_rows(mis) %>% 
+                              arrange(date) %>% 
+                              select(value)),
+              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
+              end = c(2022,12),
+              frequency = 12) # monthly
+
+# ss missing 2005-01, 2009-06, 2010-02, 2020-08, 2022-07
+
+chla_ss <- ts(as.data.frame(chla_dat %>% 
+                              filter(station == "gtmpinut") %>%
+                              select(date, value) %>% 
+                              bind_rows(mis) %>% 
+                              arrange(date) %>% 
+                              select(value)),
+              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
+              end = c(2022,12),
+              frequency = 12) # monthly
+
+chla_fm <- ts(as.data.frame(fm_nut_mo %>% 
+                              filter(datetimestamp > "2002-12-31" &
+                                       datetimestamp < "2022-01-01") %>%
+                              select(datetimestamp, chla_n) %>% 
+                              bind_rows(mis) %>% 
+                              arrange(datetimestamp) %>% 
+                              select(chla_n)),
+              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
+              end = c(2022,12), 
+              frequency = 12) # monthly
+
+chla_pc <- ts(as.data.frame(pc_nut_mo %>% 
+                              filter(datetimestamp > "2002-12-31" &
+                                       datetimestamp < "2022-01-01") %>%
+                              select(datetimestamp, chla_n) %>% 
+                              bind_rows(mis) %>% 
+                              arrange(datetimestamp) %>% 
+                              select(chla_n)),
+              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
+              end = c(2022,12),
+              frequency = 12) # monthly
+
+rm(mis)
+```
