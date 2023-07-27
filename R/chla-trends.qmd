@@ -29,6 +29,7 @@ if(!require(wqtrends)){
   CRAN = 'https://cloud.r-project.org'))
   install.packages('wqtrends')} ; library(wqtrends) # models and plots for trends
 
+if(!require(mgcv)){ install.packages("mgcv") } ;  library(mgcv)
 ```
 
 # Data
@@ -132,6 +133,8 @@ This will replace all these values with the nominal base MDL of 0.55($\mu$g/L).
 chla$chla_n[chla$chla_n < 0.55] <- 0.55 # replace all values below nominal base mdl of 0.55 with the base mdl 0.55
 ```
 
+
+
 ## Formatting for analysis
 
 So, filtering the data to remove unusable QC data, then averaging the duplicates for a monthly average chl-a at each site (`value`), and then adding information to match the format used for the `wqtrends` [workflow](https://tbep-tech.github.io/wqtrends/articles/introduction.html) [@beck2022]. This means adding a few columns such as `doy` (day of year), `cont_year` (date in decimal time), `yr` (year), `mo` (month as character label), and `param` which is probably not necessary, but since it was included in the vignette, I added a column to make it clear this is chl-a data. This is also where I filtered to remove 2002 and 2023 data since they are not of interest for this trend analysis.
@@ -156,6 +159,139 @@ chla_dat <- chla %>%
               filter(yr > 2002 & yr < 2023) # only keep data from 2003-2022
 
 head(chla_dat)
+```
+
+## Values
+
+I want to examine the data available for each station and see where data may be missing.
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmpinut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmpinut data missing for 2005-01, 06-2009, 02-2010, 08-2015, 08-2020.
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmssnut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmssnut data missing for 2005-01, 06-2009, 02-2010, 09-2019, 08-2020, 07-2022
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmfmnut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmfmnut needs NAs placed for 2005-01, 06-2009, 02-2010, 11-2015
+
+```{r}
+chla_dat %>% 
+  filter(station == "gtmpcnut") %>%
+  select(value, yr, mo) %>% 
+  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
+```
+
+gtmpcnut needs NAs placed for 2003-01, 2005-01, 2009-09, 2010-02, 2013-07, 2015-08, 2015-09, 2018-11, 2020-07, 2022-04, 2022-07, 2022-08
+
+*this may be why the data is not normally distributed...too much is missing. May need to see if I can use the ISCO data to fill in the missing information.*
+
+## Incorporating ISCO data
+
+I'll need to find ISCO data for at least 2013-07,2015-08, 2015-09 (not usable), 2018-11, 2022-04, 2022-07, 2022-08 for ISCO dates. Use the closest value to a similar time for the grab collections
+
+The Pellicer Creek data requires:
+
+Date of GRAB, Date of ISCO, HT time on Grab and HT time on ISCO
+I'll plan to try and use the closest value to a similar time for the grab collections
+
+```{r}
+pc2013 <- NUT %>% 
+            filter(!is.na(rep)) %>% # remove "S" reps in dataset
+            select(station_code, 2:5, chla_n, f_chla_n) %>% # keep only chla data
+            rename(datetimestamp = date_time_stamp) %>% # clean name
+            mutate(date = lubridate::date(datetimestamp)) %>%  # create date variable from POSIXct
+            filter(station_code == "gtmpcnut") %>% 
+            filter(grepl("2013-07-18 07:00", datetimestamp) | 
+                     grepl("2013-07-18 09:30", datetimestamp)) %>% 
+            group_by(station_code, date) %>% 
+            summarize(value = mean(chla_n)) %>% 
+            ungroup()
+
+### come back to 08 2015 given the high values
+# pc2015 <- NUT %>% 
+#             filter(!is.na(rep)) %>% # remove "S" reps in dataset
+#             select(station_code, 2:5, chla_n, f_chla_n) %>% # keep only chla data
+#             rename(datetimestamp = date_time_stamp) %>% # clean name
+#             mutate(date = lubridate::date(datetimestamp)) %>%  # create date variable from POSIXct
+#             filter(station_code == "gtmpcnut") %>% 
+#             filter(grepl("2015-08", datetimestamp)) 
+
+pc2018 <- NUT %>% 
+            filter(!is.na(rep)) %>% # remove "S" reps in dataset
+            select(station_code, 2:5, chla_n, f_chla_n) %>% # keep only chla data
+            rename(datetimestamp = date_time_stamp) %>% # clean name
+            mutate(date = lubridate::date(datetimestamp)) %>%  # create date variable from POSIXct
+            filter(station_code == "gtmpcnut") %>% 
+            filter(grepl("2018-11-06 10:30", datetimestamp)) %>% 
+            select(station_code, date, chla_n) %>% 
+  rename(value = chla_n)
+
+# in 2022 they were not collected on the same day as the grab samples.
+# cannot use 2022-07
+pc2022 <- NUT %>% 
+            filter(!is.na(rep)) %>% # remove "S" reps in dataset
+            select(station_code, 2:5, chla_n, f_chla_n) %>% # keep only chla data
+            rename(datetimestamp = date_time_stamp) %>% # clean name
+            mutate(date = lubridate::date(datetimestamp)) %>%  # create date variable from POSIXct
+            filter(station_code == "gtmpcnut") %>% 
+            filter(grepl("2022-04-18 11:00", datetimestamp) |
+                     grepl("2022-08-22 09:00", datetimestamp)) %>% 
+            select(station_code, date, chla_n) %>% 
+            rename(value = chla_n)
+
+pcISCO <- bind_rows(pc2013, pc2018, pc2022) %>% 
+  mutate(doy = lubridate::yday(date), # day of the year
+                     cont_year = lubridate::decimal_date(date), # date in decimal time
+                     yr = lubridate::year(date), # year
+                     mo = lubridate::month(date, label = TRUE), # month
+                     param = "chla") %>% # add param name
+              rename(station = station_code)
+
+rm(pc2013, pc2018, pc2022)
+
+```
+
+Add the few values from PC ISCO data into the complete dataset
+
+```{r}
+chla_dat <- bind_rows(chla_dat, pcISCO)
+```
+
+## Preparing the timeseries files
+
+In order to decompose the timeseries, there cannot be any gaps in the data. I need to identify gaps and fill them with NAs
+
+```{r}
+#| label: dat-ts
+#| include: false
+
+# 2005-01-01 is missing from all four sites, need to build in a placeholder for it
+mis <- tribble(
+  ~date, ~value,
+  "2005-01-01", NA,
+  "2009-06-01", NA,
+  "2010-02-01", NA,
+) %>% mutate(date = as.Date(date),
+             value = as.numeric(value))
+
 ```
 
 # Data Analysis
@@ -315,6 +451,11 @@ anlz_fit(mod)
 
 Using the basic smoother with just `cont_year` as a variable, the test statistics are okay. The AIC is low and there is a decent R2 value.
 
+```{r}
+par(mfrow=c(2,2)) 
+gam.check(mod)
+```
+
 Estimate results by day of year
 
 ```{r}
@@ -381,6 +522,15 @@ show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2022, ylab =
 
 ```
 
+```{r}
+trndseason <- anlz_trndseason(mod, doystr = 1, doyend = 365, justify = "center", win = 5)
+head(trndseason)
+```
+
+```{r}
+show_trndseason(mod, doystr = 1, doyend = 365, justify = "center", win = 5, ylab = "Chl. change/yr, average")
+```
+
 ### San Sebastian
 
 ```{r}
@@ -401,6 +551,11 @@ from the help: *"the estimated degrees of freedom (`edf`), the reference degrees
 
 ```{r}
 anlz_fit(mod)
+```
+
+```{r}
+par(mfrow=c(2,2)) 
+gam.check(mod)
 ```
 
 Estimate results by day of year
@@ -460,6 +615,11 @@ from the help: *"the estimated degrees of freedom (`edf`), the reference degrees
 anlz_fit(mod)
 ```
 
+```{r}
+par(mfrow=c(2,2)) 
+gam.check(mod)
+```
+
 Estimate results by day of year
 
 ```{r}
@@ -517,6 +677,11 @@ from the help: *"the estimated degrees of freedom (`edf`), the reference degrees
 
 ```{r}
 anlz_fit(mod)
+```
+
+```{r}
+par(mfrow=c(2,2)) 
+gam.check(mod)
 ```
 
 Estimate results by day of year
@@ -631,116 +796,3 @@ decomp.mult <- function(x, startyr = NULL , endyr = NULL, event = T){
 }
 ```
 
-In order to decompose the timeseries, there cannot be any gaps in the data. I need to identify gaps and fill them with NAs
-
-```{r}
-chla_dat %>% 
-  filter(station == "gtmpinut") %>%
-  select(value, yr, mo) %>% 
-  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
-```
-
-gtmpinut needs NAs placed for 2005-01, 06-2009, 02-2010, 08-2015, 08-2020.
-
-```{r}
-chla_dat %>% 
-  filter(station == "gtmssnut") %>%
-  select(value, yr, mo) %>% 
-  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
-```
-
-gtmssnut needs NAs placed for 2005-01, 06-2009, 02-2010, 09-2019, 08-2020, 07-2022
-
-```{r}
-chla_dat %>% 
-  filter(station == "gtmfmnut") %>%
-  select(value, yr, mo) %>% 
-  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
-```
-
-gtmfmnut needs NAs placed for 2005-01, 06-2009, 02-2010, 11-2015
-
-```{r}
-chla_dat %>% 
-  filter(station == "gtmpcnut") %>%
-  select(value, yr, mo) %>% 
-  pivot_wider(names_from = mo, values_from = value, id_cols = yr)
-```
-
-gtmpcnut needs NAs placed for 2003-01, 2005-01, 2009-09, 2010-02, 2013-07, 2015-08, 2015-09, 2018-11, 2020-07, 2022-04, 2022-07, 2022-08
-
-*this may be why the data is not normally distributed...too much is missing. May need to see if I can use the ISCO data to fill in the missing information.*
-
-
-
-```{r}
-#| label: dat-ts
-#| include: false
-
-# 2005-01-01 is missing from all four sites, need to build in a placeholder for it
-mis <- tribble(
-  ~date, ~value,
-  "2005-01-01", NA
-) %>% mutate(date = as.Date(date),
-             value = as.numeric(value))
-# pc is missing 2003-01 and 2005-01
-ts_chla <- function(station){
-  ts(as.data.frame(chla_dat %>% 
-                              filter(station == {{station}}) %>%
-                              select(date, value) %>% 
-                              bind_rows(mis) %>% 
-                              arrange(date) %>% 
-                              select(value)),
-              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
-              end = c(2022,12),
-              frequency = 12) # monthly
-  
-}
-
-# create timeseries objects of chlorophyll data
-chla_pi <- ts(as.data.frame(chla_dat %>% 
-                              filter(station == "gtmssnut") %>%
-                              select(date, value) %>% 
-                              # bind_rows(mis) %>% 
-                              arrange(date) %>% 
-                              select(value)),
-              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
-              end = c(2022,12),
-              frequency = 12) # monthly
-
-# ss missing 2005-01, 2009-06, 2010-02, 2020-08, 2022-07
-
-chla_ss <- ts(as.data.frame(chla_dat %>% 
-                              filter(station == "gtmpinut") %>%
-                              select(date, value) %>% 
-                              bind_rows(mis) %>% 
-                              arrange(date) %>% 
-                              select(value)),
-              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
-              end = c(2022,12),
-              frequency = 12) # monthly
-
-chla_fm <- ts(as.data.frame(fm_nut_mo %>% 
-                              filter(datetimestamp > "2002-12-31" &
-                                       datetimestamp < "2022-01-01") %>%
-                              select(datetimestamp, chla_n) %>% 
-                              bind_rows(mis) %>% 
-                              arrange(datetimestamp) %>% 
-                              select(chla_n)),
-              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
-              end = c(2022,12), 
-              frequency = 12) # monthly
-
-chla_pc <- ts(as.data.frame(pc_nut_mo %>% 
-                              filter(datetimestamp > "2002-12-31" &
-                                       datetimestamp < "2022-01-01") %>%
-                              select(datetimestamp, chla_n) %>% 
-                              bind_rows(mis) %>% 
-                              arrange(datetimestamp) %>% 
-                              select(chla_n)),
-              start = c(2003,1), # sampling started 2002-05, but 2003 is first complete year
-              end = c(2022,12),
-              frequency = 12) # monthly
-
-rm(mis)
-```
