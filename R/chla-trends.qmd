@@ -30,6 +30,11 @@ if(!require(wqtrends)){
   install.packages('wqtrends')} ; library(wqtrends) # models and plots for trends
 
 if(!require(mgcv)){ install.packages("mgcv") } ;  library(mgcv)
+if(!require(patchwork)) { install.packages("patchwork") }  ; library(patchwork)
+
+if(!require(changepoint)) { install.packages("changepoint")}; library(changepoint)
+
+if(!require(strucchange)) { install.packages('strucchange')}; library(strucchange)
 ```
 
 # Data
@@ -133,8 +138,6 @@ This will replace all these values with the nominal base MDL of 0.55($\mu$g/L).
 chla$chla_n[chla$chla_n < 0.55] <- 0.55 # replace all values below nominal base mdl of 0.55 with the base mdl 0.55
 ```
 
-
-
 ## Formatting for analysis
 
 So, filtering the data to remove unusable QC data, then averaging the duplicates for a monthly average chl-a at each site (`value`), and then adding information to match the format used for the `wqtrends` [workflow](https://tbep-tech.github.io/wqtrends/articles/introduction.html) [@beck2022]. This means adding a few columns such as `doy` (day of year), `cont_year` (date in decimal time), `yr` (year), `mo` (month as character label), and `param` which is probably not necessary, but since it was included in the vignette, I added a column to make it clear this is chl-a data. This is also where I filtered to remove 2002 and 2023 data since they are not of interest for this trend analysis.
@@ -209,8 +212,7 @@ I'll need to find ISCO data for at least 2013-07,2015-08, 2015-09 (not usable), 
 
 The Pellicer Creek data requires:
 
-Date of GRAB, Date of ISCO, HT time on Grab and HT time on ISCO
-I'll plan to try and use the closest value to a similar time for the grab collections
+Date of GRAB, Date of ISCO, HT time on Grab and HT time on ISCO I'll plan to try and use the closest value to a similar time for the grab collections
 
 ```{r}
 pc2013 <- NUT %>% 
@@ -279,21 +281,6 @@ chla_dat <- bind_rows(chla_dat, pcISCO)
 
 In order to decompose the timeseries, there cannot be any gaps in the data. I need to identify gaps and fill them with NAs
 
-```{r}
-#| label: dat-ts
-#| include: false
-
-# 2005-01-01 is missing from all four sites, need to build in a placeholder for it
-mis <- tribble(
-  ~date, ~value,
-  "2005-01-01", NA,
-  "2009-06-01", NA,
-  "2010-02-01", NA,
-) %>% mutate(date = as.Date(date),
-             value = as.numeric(value))
-
-```
-
 # Data Analysis
 
 ## Data distribution
@@ -318,7 +305,7 @@ chla_dat %>%
        title = "Identity") 
 ```
 
-Replotted the data with a log-10 transformation of the data. The data looks much better, although gtmpcnut is still curious. 
+Replotted the data with a log-10 transformation of the data. The data looks much better, although gtmpcnut is still curious.
 
 ```{r}
 chla_dat %>% 
@@ -350,9 +337,7 @@ pc <- chla_dat %>% filter(station == "gtmpcnut") %>% mutate(chla_t = log10(value
 
 ```
 
-
-::: {.panel-tabset group = "site"}
-
+::: panel-tabset
 ### Pine Island
 
 ```{r}
@@ -399,7 +384,6 @@ qqnorm(pc$chla_t, main ="gtmpcnut log10")
 qqline(pc$chla_t)
 
 ```
-
 :::
 
 ## Normality Testing
@@ -421,14 +405,13 @@ Pellicer Creek ("gtmpcnut") fails normality tests (Shapiro-Wilk and Kolmogorov-S
 
 ## Trends
 
-From the vignette for `wqtrends`, the generalized additive model (GAM) fits additive smoothing functions to describe variations in the response variable `value` over time, which is measured as a continuous number in `cont_year`. The GAM used in this model is 
+From the vignette for `wqtrends`, the generalized additive model (GAM) fits additive smoothing functions to describe variations in the response variable `value` over time, which is measured as a continuous number in `cont_year`. The GAM used in this model is
 
 chl \~ s(cont_year, k = *large*)
 
-and therefore `anlz_gam()` is used to fit the model. The upper limit of `k` (number of knots) *"should be large enough to allow sufficient flexibility in the smoothing term"* and is recommended as 12 times the number of years for the input data, however the number of knots can decrease until the data can be modeled (if insufficent data are available). 
+and therefore `anlz_gam()` is used to fit the model. The upper limit of `k` (number of knots) *"should be large enough to allow sufficient flexibility in the smoothing term"* and is recommended as 12 times the number of years for the input data, however the number of knots can decrease until the data can be modeled (if insufficent data are available).
 
-::: {.panel-tabset}
-
+::: panel-tabset
 ### Pine Island
 
 ```{r}
@@ -547,7 +530,7 @@ Now to assess fit of the model by using `anlz_smooth()` to assess individual smo
 anlz_smooth(mod)
 ```
 
-from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
+from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."*
 
 ```{r}
 anlz_fit(mod)
@@ -609,7 +592,7 @@ Now to assess fit of the model by using `anlz_smooth()` to assess individual smo
 anlz_smooth(mod)
 ```
 
-from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
+from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."*
 
 ```{r}
 anlz_fit(mod)
@@ -673,7 +656,7 @@ Now to assess fit of the model by using `anlz_smooth()` to assess individual smo
 anlz_smooth(mod)
 ```
 
-from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."* 
+from the help: *"the estimated degrees of freedom (`edf`), the reference degrees of freedom (`Ref.df`), the test statistic (`F`), and significance of the component (`p-value`). The significance of the component is in part based on the difference between `edf` and `Ref.df`."*
 
 ```{r}
 anlz_fit(mod)
@@ -718,7 +701,6 @@ show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2018, yrend = 2022, ylab =
 show_metseason(mod, doystr = 1, doyend = 365, yrstr = 2003, yrend = 2022, ylab = "Chlorophyll-a (ug/L)") + geom_hline(yintercept = 4.3, linetype = "dashed", linewidth = 1, color = "gray75") 
 
 ```
-
 :::
 
 ## Variability
@@ -796,3 +778,465 @@ decomp.mult <- function(x, startyr = NULL , endyr = NULL, event = T){
 }
 ```
 
+::: {.panel-tabset}
+
+### Pine Island
+
+```{r}
+#| label: dat-ts-pi
+#| include: false
+
+# need to build in a placeholder for all missing months
+
+mis <- tribble(
+  ~date, ~value,
+  "2005-01-01", NA,
+  "2009-06-01", NA,
+  "2010-02-01", NA,
+  "2015-08-01", NA,
+  "2020-08-01", NA
+) %>% mutate(date = as.Date(date),
+             value = as.numeric(value))
+
+decomp_pi <- data.frame(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                                      filter(station == "gtmpinut") %>% 
+                                                      select(date, value) %>% 
+                                                      bind_rows(mis) %>% 
+                                                      arrange(date) %>% 
+                                                      select(value)
+                                                     ), 
+                                     start = c(2003, 1),
+                                     end = c(2022, 12),
+                                     frequency = 12)
+                                    )
+                        ) %>% 
+              rename(value = original) %>% 
+              bind_cols((chla_dat %>% 
+                  filter(station == "gtmpinut") %>% 
+                  select(date, value) %>% 
+                  bind_rows(mis) %>% 
+                  arrange(date)
+              )) %>% 
+              select(-7) %>% 
+              rename(value = 1)
+
+
+```
+
+Using the decomposition function from @cloern2010, summary information
+
+```{r}
+#| label: decomp-pi
+
+summary(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                                      filter(station == "gtmpinut") %>% 
+                                                      select(date, value) %>% 
+                                                      bind_rows(mis) %>% 
+                                                      arrange(date) %>% 
+                                                      select(value)
+                                                     ), 
+                                     start = c(2003, 1),
+                                     end = c(2022, 12),
+                                     frequency = 12)))
+
+```
+
+```{r}
+#| label: pi-variability-figures
+
+a <- ggplot(decomp_pi) +
+            geom_line(aes(x = date, y = value), color = "blue") +
+            scale_x_date(date_breaks = "year", date_labels = "%Y") +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, "black", NA, NA)),
+                  panel.grid.minor = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Chl-a \u00b5g/L',
+                 title = "A. Pine Island")
+    b <- decomp_pi %>% 
+          mutate(year = year(date)) %>% 
+          select(year, interann) %>% 
+          unique() %>% 
+          ggplot() +
+            geom_col(aes(x = year, y = interann-1), fill = "red") +
+            geom_hline(yintercept = 0, color = "red") +
+            scale_x_continuous(breaks = seq(2000, 2022, by = 1)) +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, NA, "black", NA)),
+                  panel.grid = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Annual')
+    c <- ggplot(decomp_pi) +
+          geom_col(aes(x = date, y = events-1), fill = "purple") +
+          geom_hline(yintercept = 0, color = "purple") +
+          scale_x_date(date_breaks = "year", date_labels = "%Y") +
+          scale_y_continuous(limits = c(-1,2)) +
+          theme_bw() +
+          theme(axis.text.x = element_text(colour = c(NA, NA,"black", NA, NA)),
+                panel.grid = element_blank(),
+                axis.text = element_text(color = "black")) +
+          labs(x = '',
+               y = 'Residual')
+    d <- decomp_pi %>% 
+          mutate(month = month(date, label = T)) %>% 
+          select(month, season) %>% 
+          unique %>% 
+          ggplot() +
+            geom_col(aes(x = month, y = season-1), fill = "green") +
+            geom_hline(yintercept = 0, color = "green") +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text = element_text(color = "black"),
+                  panel.grid = element_blank()) +
+            labs(x = '',
+                 y = 'Season')
+a/b/c/d
+```
+
+### San Sebastian
+
+```{r}
+#| label: dat-ts-ss
+#| include: false
+
+# need to build in a placeholder for all missing months
+
+mis <- tribble(
+  ~date, ~value,
+  "2005-01-01", NA,
+  "2009-06-01", NA,
+  "2010-02-01", NA,
+  "2019-09-01", NA,
+  "2020-08-01", NA,
+  "2022-07-01", NA
+) %>% mutate(date = as.Date(date),
+             value = as.numeric(value))
+
+decomp_ss <- data.frame(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                                      filter(station == "gtmssnut") %>% 
+                                                      select(date, value) %>% 
+                                                      bind_rows(mis) %>% 
+                                                      arrange(date) %>% 
+                                                      select(value)
+                                                     ), 
+                                     start = c(2003, 1),
+                                     end = c(2022, 12),
+                                     frequency = 12)
+                                    )
+                        ) %>% 
+              rename(value = original) %>% 
+              bind_cols((chla_dat %>% 
+                  filter(station == "gtmssnut") %>% 
+                  select(date, value) %>% 
+                  bind_rows(mis) %>% 
+                  arrange(date)
+              )) %>% 
+              select(-7) %>% 
+              rename(value = 1)
+```
+
+Using the decomposition function from @cloern2010, summary information
+
+```{r}
+#| label: decomp-ss
+
+summary(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                       filter(station == "gtmssnut") %>% 
+                                       select(date, value) %>% 
+                                       bind_rows(mis) %>% 
+                                       arrange(date) %>% 
+                                       select(value)
+                                     ), 
+                        start = c(2003, 1),
+                        end = c(2022, 12),
+                        frequency = 12)))
+
+```
+
+```{r}
+#| label: ss-variability-figures
+
+a <- ggplot(decomp_ss) +
+            geom_line(aes(x = date, y = value), color = "blue") +
+            scale_x_date(date_breaks = "year", date_labels = "%Y") +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, "black", NA, NA)),
+                  panel.grid.minor = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Chl-a \u00b5g/L',
+                 title = "B. San Sebastian")
+    b <- decomp_ss %>% 
+          mutate(year = year(date)) %>% 
+          select(year, interann) %>% 
+          unique() %>% 
+          ggplot() +
+            geom_col(aes(x = year, y = interann-1), fill = "red") +
+            geom_hline(yintercept = 0, color = "red") +
+            scale_x_continuous(breaks = seq(2000, 2022, by = 1)) +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, NA, "black", NA)),
+                  panel.grid = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Annual')
+    c <- ggplot(decomp_ss) +
+          geom_col(aes(x = date, y = events-1), fill = "purple") +
+          geom_hline(yintercept = 0, color = "purple") +
+          scale_x_date(date_breaks = "year", date_labels = "%Y") +
+          scale_y_continuous(limits = c(-1,2)) +
+          theme_bw() +
+          theme(axis.text.x = element_text(colour = c(NA, NA,"black", NA, NA)),
+                panel.grid = element_blank(),
+                axis.text = element_text(color = "black")) +
+          labs(x = '',
+               y = 'Residual')
+    d <- decomp_ss %>% 
+          mutate(month = month(date, label = T)) %>% 
+          select(month, season) %>% 
+          unique %>% 
+          ggplot() +
+            geom_col(aes(x = month, y = season-1), fill = "green") +
+            geom_hline(yintercept = 0, color = "green") +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text = element_text(color = "black"),
+                  panel.grid = element_blank()) +
+            labs(x = '',
+                 y = 'Season')
+a/b/c/d
+```
+
+### Fort Matanzas
+
+```{r}
+#| label: dat-ts-fm
+#| include: false
+
+# need to build in a placeholder for all missing months
+
+mis <- tribble(
+  ~date, ~value,
+  "2005-01-01", NA,
+  "2009-06-01", NA,
+  "2010-02-01", NA,
+  "2015-11-01", NA
+) %>% mutate(date = as.Date(date),
+             value = as.numeric(value))
+
+decomp_fm <- data.frame(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                                      filter(station == "gtmfmnut") %>% 
+                                                      select(date, value) %>% 
+                                                      bind_rows(mis) %>% 
+                                                      arrange(date) %>% 
+                                                      select(value)
+                                                     ), 
+                                     start = c(2003, 1),
+                                     end = c(2022, 12),
+                                     frequency = 12)
+                                    )
+                        ) %>% 
+              rename(value = original) %>% 
+              bind_cols((chla_dat %>% 
+                  filter(station == "gtmfmnut") %>% 
+                  select(date, value) %>% 
+                  bind_rows(mis) %>% 
+                  arrange(date)
+              )) %>% 
+              select(-7) %>% 
+              rename(value = 1)
+```
+
+Using the decomposition function from @cloern2010, summary information
+
+```{r}
+#| label: decomp-fm
+
+summary(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                       filter(station == "gtmfmnut") %>% 
+                                       select(date, value) %>% 
+                                       bind_rows(mis) %>% 
+                                       arrange(date) %>% 
+                                       select(value)
+                                     ), 
+                        start = c(2003, 1),
+                        end = c(2022, 12),
+                        frequency = 12)))
+
+```
+
+```{r}
+#| label: fm-variability-figures
+
+a <- ggplot(decomp_fm) +
+            geom_line(aes(x = date, y = value), color = "blue") +
+            scale_x_date(date_breaks = "year", date_labels = "%Y") +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, "black", NA, NA)),
+                  panel.grid.minor = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Chl-a \u00b5g/L',
+                 title = "C. Fort Matanzas")
+    b <- decomp_fm %>% 
+          mutate(year = year(date)) %>% 
+          select(year, interann) %>% 
+          unique() %>% 
+          ggplot() +
+            geom_col(aes(x = year, y = interann-1), fill = "red") +
+            geom_hline(yintercept = 0, color = "red") +
+            scale_x_continuous(breaks = seq(2000, 2022, by = 1)) +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, NA, "black", NA)),
+                  panel.grid = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Annual')
+    c <- ggplot(decomp_fm) +
+          geom_col(aes(x = date, y = events-1), fill = "purple") +
+          geom_hline(yintercept = 0, color = "purple") +
+          scale_x_date(date_breaks = "year", date_labels = "%Y") +
+          scale_y_continuous(limits = c(-1,2)) +
+          theme_bw() +
+          theme(axis.text.x = element_text(colour = c(NA, NA,"black", NA, NA)),
+                panel.grid = element_blank(),
+                axis.text = element_text(color = "black")) +
+          labs(x = '',
+               y = 'Residual')
+    d <- decomp_fm %>% 
+          mutate(month = month(date, label = T)) %>% 
+          select(month, season) %>% 
+          unique %>% 
+          ggplot() +
+            geom_col(aes(x = month, y = season-1), fill = "green") +
+            geom_hline(yintercept = 0, color = "green") +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text = element_text(color = "black"),
+                  panel.grid = element_blank()) +
+            labs(x = '',
+                 y = 'Season')
+a/b/c/d
+```
+
+### Pellicer Creek
+
+```{r}
+#| label: dat-ts-pc
+#| include: false
+
+# need to build in a placeholder for all missing months
+
+mis <- tribble(
+  ~date, ~value,
+  "2003-01-01", NA,
+  "2005-01-01", NA,
+  "2009-09-01", NA,
+  "2010-02-01", NA,
+  "2015-08-01", NA, 
+  "2015-09-01", NA,
+  "2020-07-01", NA,
+  "2022-07-01", NA
+) %>% mutate(date = as.Date(date),
+             value = as.numeric(value))
+
+decomp_pc <- data.frame(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                                      filter(station == "gtmpcnut") %>% 
+                                                      select(date, value) %>% 
+                                                      bind_rows(mis) %>% 
+                                                      arrange(date) %>% 
+                                                      select(value)
+                                                     ), 
+                                     start = c(2003, 1),
+                                     end = c(2022, 12),
+                                     frequency = 12)
+                                    )
+                        ) %>% 
+              rename(value = original) %>% 
+              bind_cols((chla_dat %>% 
+                  filter(station == "gtmpcnut") %>% 
+                  select(date, value) %>% 
+                  bind_rows(mis) %>% 
+                  arrange(date)
+              )) %>% 
+              select(-7) %>% 
+              rename(value = 1)
+```
+
+Using the decomposition function from @cloern2010, summary information
+
+```{r}
+#| label: decomp-pc
+
+summary(decomp.mult(ts(as.data.frame(chla_dat %>% 
+                                       filter(station == "gtmpcnut") %>% 
+                                       select(date, value) %>% 
+                                       bind_rows(mis) %>% 
+                                       arrange(date) %>% 
+                                       select(value)
+                                     ), 
+                        start = c(2003, 1),
+                        end = c(2022, 12),
+                        frequency = 12)))
+
+```
+
+```{r}
+#| label: pc-variability-figures
+
+a <- ggplot(decomp_pc) +
+            geom_line(aes(x = date, y = value), color = "blue") +
+            scale_x_date(date_breaks = "year", date_labels = "%Y") +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, "black", NA, NA)),
+                  panel.grid.minor = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Chl-a \u00b5g/L',
+                 title = "D. Pellicer Creek")
+    b <- decomp_pc %>% 
+          mutate(year = year(date)) %>% 
+          select(year, interann) %>% 
+          unique() %>% 
+          ggplot() +
+            geom_col(aes(x = year, y = interann-1), fill = "red") +
+            geom_hline(yintercept = 0, color = "red") +
+            scale_x_continuous(breaks = seq(2000, 2022, by = 1)) +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text.x = element_text(colour = c(NA, NA, NA, "black", NA)),
+                  panel.grid = element_blank(),
+                  axis.text = element_text(color = "black")) +
+            labs(x = '',
+                 y = 'Annual')
+    c <- ggplot(decomp_pc) +
+          geom_col(aes(x = date, y = events-1), fill = "purple") +
+          geom_hline(yintercept = 0, color = "purple") +
+          scale_x_date(date_breaks = "year", date_labels = "%Y") +
+          scale_y_continuous(limits = c(-1,2)) +
+          theme_bw() +
+          theme(axis.text.x = element_text(colour = c(NA, NA,"black", NA, NA)),
+                panel.grid = element_blank(),
+                axis.text = element_text(color = "black")) +
+          labs(x = '',
+               y = 'Residual')
+    d <- decomp_pc %>% 
+          mutate(month = month(date, label = T)) %>% 
+          select(month, season) %>% 
+          unique %>% 
+          ggplot() +
+            geom_col(aes(x = month, y = season-1), fill = "green") +
+            geom_hline(yintercept = 0, color = "green") +
+            scale_y_continuous(limits = c(-1,1)) +
+            theme_bw() +
+            theme(axis.text = element_text(color = "black"),
+                  panel.grid = element_blank()) +
+            labs(x = '',
+                 y = 'Season')
+a/b/c/d
+```
